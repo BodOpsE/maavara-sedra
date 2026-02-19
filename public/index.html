@@ -552,8 +552,9 @@ function App(){
       else if(local.weeks?.[w]){sp=local.weeks[w];ss=local.stats||ss;}
       setProg(sp);setStats(ss);
       const cal=await fetchCal();if(!cal)throw new Error('Could not fetch parasha calendar');
-      const pn=cal.title?.en?.replace('Parashat ','')||'Unknown';
-      setParasha(pn);setParashaHe(cal.title?.he||'');setParashaRef(cal.ref||'');
+      const pn=cal.displayValue?.en||cal.title?.en?.replace('Parashat ','')||'Unknown';
+      const phe=cal.displayValue?.he||'';
+      setParasha(pn);setParashaHe(phe?`\u05E4\u05E8\u05E9\u05EA ${phe}`:'');setParashaRef(cal.ref||'');
       let refs=cal.extraDetails?.aliyot||null;
       const td=await fetchTxt(cal.ref||'');if(!td?.he)throw new Error('Could not fetch parasha text');
       let hf=[],ef=[];
