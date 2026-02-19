@@ -65,10 +65,9 @@ button { font-family:var(--serif); cursor:pointer }
 .p-banner::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--warm) }
 .p-label { font-size:0.62rem; color:var(--text4); text-transform:uppercase;
   letter-spacing:2.5px; font-weight:700; margin-bottom:10px }
-.p-name { font-family:var(--hebrew); font-size:2.2rem; font-weight:900;
-  color:var(--brown); line-height:1.1 }
-.p-he { font-family:var(--hebrew); font-size:1.1rem; color:var(--text3);
-  direction:rtl; margin-top:5px; font-weight:300 }
+.p-name { font-family:var(--hebrew); font-size:2.4rem; font-weight:900;
+  color:var(--brown); line-height:1.1; direction:rtl; text-align:right }
+.p-name-en { font-size:1.15rem; color:var(--text2); font-weight:600; margin-top:4px }
 .p-ref { font-size:0.82rem; color:var(--warm); font-weight:600; margin-top:12px }
 .p-status { display:flex; justify-content:space-between; align-items:center;
   margin-top:18px; padding-top:18px; border-top:1px solid var(--border) }
@@ -212,6 +211,7 @@ button { font-family:var(--serif); cursor:pointer }
   transition:all 0.15s; font-family:var(--serif) }
 .ai-btn:active { background:var(--bg); border-color:var(--warm-border) }
 .ai-btn:disabled { opacity:0.3 }
+.ai-btn-open { background:var(--warm-faint); border-color:var(--warm-border); color:var(--brown-soft) }
 
 /* AI response — same warm palette, clean */
 .ai-response { margin-top:20px; padding:22px; background:var(--card2);
@@ -308,13 +308,17 @@ function lSave(d){localStorage.setItem(LS_KEY,JSON.stringify(d));}
 /* AI */
 async function askAI(type,params){
   try{
+    const ctrl=new AbortController();
+    const timer=setTimeout(()=>ctrl.abort(),15000);
     const r=await fetch('/api/explain',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({type,...params,
         includeRashiHebrew:true,
         instruction:'When explaining this Rashi, always quote the key Rashi Hebrew phrases and then explain what each phrase means in English. The reader wants to match the Rashi script letters to the meaning. Format: quote a Rashi phrase in Hebrew, then explain it.'
-      })});
-    const d=await r.json();return d.text||'Could not get explanation.';
-  }catch(e){return'Could not connect to AI tutor.';}
+      }),signal:ctrl.signal});
+    clearTimeout(timer);
+    if(!r.ok)return`Error: ${r.status}`;
+    const d=await r.json();return d.text||d.error||'Could not get explanation.';
+  }catch(e){return e.name==='AbortError'?'Request timed out. Try again.':'Could not connect to AI tutor.';}
 }
 
 /* === COMPONENTS === */
@@ -330,11 +334,15 @@ function Pasuk({he,en,num,parasha,aliyah}){
     if(ai){setAi(null);return;}
     setLoading(true);
     try{
+      const ctrl=new AbortController();
+      const timer=setTimeout(()=>ctrl.abort(),15000);
       const r=await fetch('/api/explain',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({type:'explain_pasuk',pasukHe:he,pasukEn:en,parasha,aliyah,
-          instruction:'Explain this pasuk simply and clearly in 2-3 sentences. Use frum terminology (Hashem, Moshe, Bnei Yisroel, etc). Keep it concise and accessible.'})});
-      const d=await r.json();setAi(d.text||'Could not get explanation.');
-    }catch(e){setAi('Could not connect to AI tutor.');}
+          instruction:'Explain this pasuk simply and clearly in 2-3 sentences. Use frum terminology (Hashem, Moshe, Bnei Yisroel, etc). Keep it concise and accessible.'}),signal:ctrl.signal});
+      clearTimeout(timer);
+      if(!r.ok){setAi(`Error: ${r.status}`);setLoading(false);return;}
+      const d=await r.json();setAi(d.text||d.error||'Could not get explanation.');
+    }catch(e){setAi(e.name==='AbortError'?'Request timed out. Try again.':'Could not connect to AI tutor.');}
     setLoading(false);
   };
   const cleanEn=strip(en)||'...';
@@ -356,6 +364,7 @@ function Pasuk({he,en,num,parasha,aliyah}){
 
 function Rashi({rashi,pasukHe,pasukEn,parasha,aliyah}){
   const[ai,setAi]=useState(null);const[loading,setLoading]=useState(false);
+  const[showEn,setShowEn]=useState(false);
   const ask=async t=>{
     setLoading(true);
     setAi(await askAI(t,{rashiHe:rashi.he,rashiEn:rashi.en,pasukHe,pasukEn,parasha,aliyah}));
@@ -367,16 +376,17 @@ function Rashi({rashi,pasukHe,pasukEn,parasha,aliyah}){
 
     <div className="rashi-pair">
       <div className="rashi-he" dangerouslySetInnerHTML={{__html:rashi.he}}/>
-      {rashi.en
-        ?<div className="rashi-en">{strip(rashi.en)}</div>
-        :<div className="rashi-no-en">English not available from Sefaria</div>}
     </div>
 
     <div className="ai-btns">
       <button className="ai-btn" onClick={()=>ask('whats_the_question')} disabled={loading}>What bothered Rashi?</button>
       <button className="ai-btn" onClick={()=>ask('explain_simply')} disabled={loading}>Explain simply</button>
+      {rashi.en&&<button className={`ai-btn ${showEn?'ai-btn-open':''}`} onClick={()=>setShowEn(!showEn)}>
+        {showEn?'Hide Sefaria Translation':'Sefaria Translation'}
+      </button>}
       {ai&&<button className="ai-btn" onClick={()=>ask('deeper')} disabled={loading}>Go deeper</button>}
     </div>
+    {showEn&&rashi.en&&<div className="rashi-en">{strip(rashi.en)}</div>}
     {loading&&<div className="ai-response ai-loading">Thinking...</div>}
     {ai&&!loading&&<div className="ai-response">
       <div className="ai-rashi-ref" dangerouslySetInnerHTML={{__html:rashi.he}}/>
@@ -404,11 +414,15 @@ function ReadingScreen({dayIdx,pesukim,rashiData,parasha,aliyahRef,onBack,onComp
       const allHe=pesukim.he.map(h=>strip(h)).join(' ');
       const allEn=pesukim.en.map(e=>strip(e)).join(' ');
       const phaseLabel=phase==='mikra1'?'first reading':phase==='rashi'?'Rashi study':'second reading';
+      const ctrl=new AbortController();
+      const timer=setTimeout(()=>ctrl.abort(),20000);
       const r=await fetch('/api/explain',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({type:'review_aliyah',pasukHe:allHe,pasukEn:allEn,parasha,aliyah:ALIYAH_NAMES[dayIdx],
-          instruction:`Give a clear, engaging summary of this aliyah (${ALIYAH_NAMES[dayIdx]} of Parshas ${parasha}) after the ${phaseLabel}. Use frum terminology (Hashem, Moshe, Bnei Yisroel, klal Yisroel, etc). Cover: 1) What happens in this section, 2) Key themes or lessons, 3) One interesting insight or connection. Keep it 4-6 sentences, conversational but substantive. Like a quick chavrusa review.`})});
-      const d=await r.json();setAiReview(d.text||'Could not get review.');
-    }catch(e){setAiReview('Could not connect to AI tutor.');}
+          instruction:`Give a clear, engaging summary of this aliyah (${ALIYAH_NAMES[dayIdx]} of Parshas ${parasha}) after the ${phaseLabel}. Use frum terminology (Hashem, Moshe, Bnei Yisroel, klal Yisroel, etc). Cover: 1) What happens in this section, 2) Key themes or lessons, 3) One interesting insight or connection. Keep it 4-6 sentences, conversational but substantive. Like a quick chavrusa review.`}),signal:ctrl.signal});
+      clearTimeout(timer);
+      if(!r.ok){setAiReview(`Error: ${r.status}`);setReviewLoading(false);return;}
+      const d=await r.json();setAiReview(d.text||d.error||'Could not get review.');
+    }catch(e){setAiReview(e.name==='AbortError'?'Request timed out. Try again.':'Could not connect to AI tutor.');}
     setReviewLoading(false);
   };
 
@@ -416,8 +430,8 @@ function ReadingScreen({dayIdx,pesukim,rashiData,parasha,aliyahRef,onBack,onComp
     <div className="r-hdr">
       <button className="r-back" onClick={onBack}>{'\u2039'}</button>
       <div className="r-hdr-info">
-        <h2>{ALIYAH_HE[dayIdx]} {'\u00B7'} {ALIYAH_NAMES[dayIdx]}</h2>
-        <span>{parasha}{aliyahRef?` \u00B7 ${sRef(aliyahRef)}`:''}</span>
+        <h2>{parasha} · {ALIYAH_HE[dayIdx]}</h2>
+        <span>{ALIYAH_NAMES[dayIdx]}{aliyahRef?` · ${sRef(aliyahRef)}`:''}</span>
       </div>
     </div>
     <div className="r-tabs">
@@ -430,8 +444,8 @@ function ReadingScreen({dayIdx,pesukim,rashiData,parasha,aliyahRef,onBack,onComp
         <div className="tip-box">
           <span className="tip-box-icon">{phase==='mikra1'?'\uD83D\uDCD6':'\u2728'}</span>
           <div>{phase==='mikra1'
-            ?<><b>First reading.</b> Read each pasuk in Hebrew. Tap "Show English" or "Explain" if you need help.</>
-            :<><b>Second reading.</b> Now that you've seen Rashi, read through again. You'll notice things you missed.</>}
+            ?<><b>First Reading</b> — Shnayim Mikra</>
+            :<><b>Second Reading</b> — V'Echad Targum</>}
           </div>
         </div>
         {pesukim.he.map((h,i)=><Pasuk key={i} he={h} en={pesukim.en[i]} num={pesukim.startIdx+i+1} parasha={parasha} aliyah={ALIYAH_NAMES[dayIdx]}/>)}
@@ -439,7 +453,7 @@ function ReadingScreen({dayIdx,pesukim,rashiData,parasha,aliyahRef,onBack,onComp
       {phase==='rashi'&&<>
         <div className="tip-box">
           <span className="tip-box-icon">{'\uD83D\uDCDD'}</span>
-          <div><b>Rashi's commentary.</b> Read the Hebrew, match it to the English below, then tap the buttons for a deeper explanation.</div>
+          <div><b>Rashi</b> — Read the Hebrew, then use the AI buttons for a clear explanation.</div>
         </div>
         {rashiComments.length>0
           ?rashiComments.map((r,i)=><Rashi key={i} rashi={r} pasukHe={pesukim.he[r.pasukIdx]||''} pasukEn={pesukim.en[r.pasukIdx]||''} parasha={parasha} aliyah={ALIYAH_NAMES[dayIdx]}/>)
@@ -474,9 +488,9 @@ function Home({parasha,parashaHe,parashaRef,aliyahRefs,progress,onSelect,stats})
 
   return<div className="home fade-in">
     <div className="p-banner">
-      <div className="p-label">This Week's Parasha</div>
-      <div className="p-name">{parasha}</div>
-      {parashaHe&&<div className="p-he">{parashaHe}</div>}
+      <div className="p-label">This Week</div>
+      <div className="p-name">{parashaHe||parasha}</div>
+      <div className="p-name-en">{parasha}</div>
       <div className="p-ref">{sRef(parashaRef)}</div>
       <div className="p-status">
         <div className="p-progress"><strong>{done}</strong>/7 aliyos done</div>
