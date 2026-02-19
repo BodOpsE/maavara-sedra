@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2A1810">
+<link rel="manifest" href="/manifest.json">
+<title>Maavara Sedra</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#FAF5ED;--card:#FFFFFF;--card2:#FBF8F3;
+  --text:#1A0F08;--text2:#4A3A2E;--text3:#8A7A6A;--text4:#B0A090;
+  --brown:#3D2418;--brown2:#5A3828;--brown-soft:#7A5A48;
+  --gold:#B8895A;--gold-light:#D4A574;--gold-faint:rgba(184,137,90,0.08);
+  --gold-border:rgba(184,137,90,0.2);
+  --done:#6B8E6B;--done-bg:#F0F5F0;--done-border:#C8D8C8;
+  --border:#E8DDD0;--border2:#D8C8B8;
+  --shadow:rgba(26,15,8,0.05);--shadow2:rgba(26,15,8,0.1);
+  --serif:'Crimson Text',Georgia,serif;
+  --hebrew:'Frank Ruhl Libre','David',serif;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:17px;background:var(--brown)}
+body{font-family:var(--serif);color:var(--text);min-height:100dvh;
+  padding-top:var(--safe-top);padding-bottom:var(--safe-bot);background:var(--bg)}
+#root{max-width:500px;margin:0 auto;min-height:100dvh;background:var(--bg)}
+button{font-family:var(--serif);cursor:pointer}
+
+/* Header */
+.hdr{background:var(--brown);color:var(--bg);padding:24px 24px 20px;position:relative}
+.hdr-title{font-family:var(--hebrew);font-size:1.55rem;font-weight:900;color:#F5EDE0;letter-spacing:0.3px}
+.hdr-sub{font-size:0.72rem;color:rgba(245,237,224,0.4);font-weight:400;letter-spacing:1.5px;
+  text-transform:uppercase;margin-top:3px}
+.hdr-line{height:1px;background:linear-gradient(90deg,transparent,rgba(184,137,90,0.3),transparent);margin-top:16px}
+.hdr-dates{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0 0;margin-top:0}
+.hdr-date-en{font-size:0.78rem;color:rgba(245,237,224,0.5)}
+.hdr-date-he{font-family:var(--hebrew);font-size:0.88rem;color:var(--gold-light);direction:rtl}
+.hdr-streak{position:absolute;top:24px;right:24px;
+  font-size:0.82rem;color:var(--gold-light);opacity:0.8}
+
+/* Home */
+.home{padding:24px 20px 40px}
+
+/* Parasha banner */
+.parasha-banner{background:var(--card);border-radius:16px;padding:28px 24px 24px;
+  margin-bottom:24px;box-shadow:0 2px 12px var(--shadow);border:1px solid var(--border);
+  position:relative;overflow:hidden}
+.parasha-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--gold)}
+.parasha-label{font-size:0.65rem;color:var(--text4);text-transform:uppercase;
+  letter-spacing:2px;font-weight:700;margin-bottom:8px}
+.parasha-name{font-family:var(--hebrew);font-size:2.1rem;font-weight:900;
+  color:var(--brown);line-height:1.1}
+.parasha-he{font-family:var(--hebrew);font-size:1.1rem;color:var(--text3);
+  direction:rtl;margin-top:4px;font-weight:300}
+.parasha-ref{font-size:0.82rem;color:var(--gold);font-weight:600;margin-top:10px}
+.parasha-status{display:flex;justify-content:space-between;align-items:center;
+  margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.parasha-progress{font-size:0.88rem;color:var(--text2)}
+.parasha-progress strong{color:var(--brown);font-size:1.1rem}
+.parasha-countdown{font-size:0.82rem;color:var(--text3)}
+
+/* Today card */
+.today{background:var(--card);border-radius:16px;padding:24px;margin-bottom:20px;
+  box-shadow:0 2px 12px var(--shadow);border:1px solid var(--border)}
+.today-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.today-label{font-size:0.65rem;color:var(--text4);text-transform:uppercase;
+  letter-spacing:2px;font-weight:700}
+.today-day{font-size:0.78rem;color:var(--text3)}
+.today-main{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.today-badge{width:52px;height:52px;border-radius:50%;flex-shrink:0;
+  background:var(--gold);display:flex;align-items:center;justify-content:center;
+  font-family:var(--hebrew);font-size:1.5rem;font-weight:900;color:white}
+.today-info{}
+.today-name{font-family:var(--hebrew);font-size:1.3rem;font-weight:700;color:var(--brown);line-height:1.2}
+.today-en{font-size:0.88rem;color:var(--text3);margin-top:2px}
+.today-ref{font-size:0.78rem;color:var(--gold);font-weight:600;margin-top:2px}
+
+/* Phase steps */
+.phases{display:flex;align-items:center;margin-bottom:24px}
+.phase-node{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:1}
+.phase-circ{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:0.7rem;
+  color:var(--text4);background:var(--card);font-weight:700;transition:all 0.2s}
+.phase-circ.done{background:var(--done);border-color:var(--done);color:white}
+.phase-circ.active{border-color:var(--gold);background:var(--gold-faint);color:var(--gold)}
+.phase-lbl{font-size:0.62rem;color:var(--text4);font-weight:600}
+.phase-lbl.done{color:var(--done)}
+.phase-lbl.active{color:var(--gold)}
+.phase-line{flex:1;height:2px;background:var(--border)}
+.phase-line.done{background:var(--done)}
+
+/* CTA */
+.cta-btn{width:100%;padding:16px;border-radius:12px;border:none;
+  font-size:1rem;font-weight:700;transition:all 0.15s;font-family:var(--serif)}
+.cta-btn.go{background:var(--brown);color:#F5EDE0}
+.cta-btn.go:active{opacity:0.9;transform:scale(0.99)}
+.cta-btn.done-state{background:var(--done-bg);color:var(--done);border:2px solid var(--done-border)}
+.cta-btn.done-state:active{background:#E8F0E8}
+.done-msg{text-align:center;margin-bottom:14px;font-size:0.92rem;color:var(--done);font-weight:600}
+
+/* Week strip */
+.week{background:var(--card);border-radius:14px;padding:16px 12px;
+  box-shadow:0 1px 8px var(--shadow);margin-bottom:20px;border:1px solid var(--border)}
+.week-label{font-size:0.6rem;color:var(--text4);text-transform:uppercase;
+  letter-spacing:1.5px;font-weight:700;text-align:center;margin-bottom:10px}
+.week-row{display:flex;justify-content:space-around}
+.wd{display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;padding:4px;border-radius:8px;min-width:36px}
+.wd:active{background:var(--bg)}
+.wd-c{width:30px;height:30px;border-radius:50%;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--hebrew);font-size:0.85rem;font-weight:700;
+  color:var(--text4);background:var(--card);transition:all 0.2s}
+.wd-c.done{background:var(--done);border-color:var(--done);color:white;font-size:0.7rem}
+.wd-c.today{border-color:var(--gold);color:var(--gold);background:var(--gold-faint)}
+.wd-c.today.done{background:var(--done);border-color:var(--done);color:white}
+.wd-d{font-size:0.58rem;color:var(--text4);font-weight:600}
+.wd-d.today{color:var(--gold)}
+
+/* Tip */
+.tip{text-align:center;padding:16px;font-family:var(--hebrew);font-size:0.95rem;
+  color:var(--text4);font-weight:300;letter-spacing:0.5px}
+
+/* Reading screen */
+.reading{background:var(--bg);min-height:100dvh}
+.r-hdr{background:var(--brown);color:#F5EDE0;padding:16px 20px;display:flex;
+  align-items:center;gap:12px;position:sticky;top:0;z-index:20}
+.r-back{background:none;border:none;color:#F5EDE0;font-size:1.3rem;padding:4px 8px;opacity:0.7}
+.r-back:active{opacity:1}
+.r-hdr-info{flex:1}
+.r-hdr-info h2{font-family:var(--hebrew);font-size:1.05rem;font-weight:700}
+.r-hdr-info span{font-size:0.72rem;opacity:0.45}
+
+.r-tabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);
+  position:sticky;top:52px;z-index:19}
+.r-tab{flex:1;padding:12px 6px;text-align:center;font-size:0.78rem;
+  color:var(--text4);cursor:pointer;border:none;border-bottom:2px solid transparent;
+  background:none;font-weight:600;font-family:var(--serif)}
+.r-tab.active{color:var(--brown);border-bottom-color:var(--gold)}
+.r-tab.done{color:var(--done)}
+.r-body{padding:24px 22px 120px}
+
+.tip-box{padding:14px 16px;border-radius:10px;margin-bottom:24px;
+  font-size:0.85rem;line-height:1.6;display:flex;gap:10px}
+.tip-box.read{background:#F0F4F8;color:#4A6080}
+.tip-box.read2{background:var(--done-bg);color:#4A6848}
+.tip-box.rashi{background:var(--gold-faint);color:var(--text2);border:1px solid var(--gold-border)}
+.tip-box-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
+
+.pasuk{margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.pasuk:last-child{border-bottom:none}
+.pasuk-num{font-size:0.68rem;color:var(--gold);font-weight:700;margin-bottom:8px;font-family:var(--hebrew)}
+.pasuk-he{font-family:var(--hebrew);font-size:1.4rem;line-height:2.2;
+  direction:rtl;text-align:right;color:var(--text)}
+.pasuk-en{font-size:0.88rem;line-height:1.75;color:var(--text3);
+  margin-top:12px;padding-left:14px;border-left:2px solid var(--border)}
+
+.rashi-block{margin-bottom:24px;background:var(--card);border-radius:12px;
+  padding:20px;border:1px solid var(--border);box-shadow:0 1px 6px var(--shadow)}
+.rashi-label{font-size:0.62rem;color:var(--text4);text-transform:uppercase;
+  letter-spacing:1px;font-weight:700;margin-bottom:8px}
+.rashi-dibbur{font-family:var(--hebrew);font-size:1.1rem;direction:rtl;text-align:right;
+  color:var(--brown);font-weight:700;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.rashi-he{font-family:var(--hebrew);font-size:1rem;direction:rtl;text-align:right;
+  color:var(--text);line-height:2.1;margin-bottom:12px}
+.rashi-en{font-size:0.85rem;line-height:1.75;color:var(--text3);
+  padding-top:12px;border-top:1px dashed var(--border)}
+.rashi-no-en{font-size:0.78rem;color:var(--text4);font-style:italic;
+  padding-top:10px;border-top:1px dashed var(--border)}
+
+/* AI buttons — same warm family, no competing colors */
+.ai-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.ai-btn{display:inline-flex;align-items:center;gap:5px;padding:9px 14px;
+  background:var(--card2);border:1px solid var(--border);border-radius:8px;
+  font-size:0.78rem;color:var(--brown-soft);font-weight:600;
+  transition:all 0.15s;font-family:var(--serif)}
+.ai-btn:active{background:var(--bg);border-color:var(--border2)}
+.ai-btn:disabled{opacity:0.35}
+.ai-response{margin-top:14px;padding:16px;background:var(--card2);
+  border-radius:10px;font-size:0.88rem;line-height:1.75;color:var(--text);
+  border:1px solid var(--border)}
+.ai-loading{color:var(--text4);font-style:italic}
+
+.bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:500px;padding:14px 22px calc(14px + var(--safe-bot));
+  background:rgba(250,245,237,0.95);backdrop-filter:blur(12px);
+  border-top:1px solid var(--border);z-index:20}
+.done-btn{width:100%;padding:15px;border-radius:12px;font-size:1rem;
+  font-weight:700;border:none;font-family:var(--serif)}
+.done-btn.primary{background:var(--brown);color:#F5EDE0}
+.done-btn.primary:active{opacity:0.9}
+
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;gap:20px}
+.spinner{width:28px;height:28px;border:2.5px solid var(--border);border-top-color:var(--gold);
+  border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:0.88rem;color:var(--text4)}
+.error-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:28px;margin:24px;text-align:center}
+.error-card h3{color:var(--brown);margin-bottom:8px}
+.retry-btn{margin-top:16px;padding:12px 32px;background:var(--brown);color:#F5EDE0;
+  border:none;border-radius:10px;font-weight:600;font-family:var(--serif)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text4)}
+.empty-state .emoji{font-size:2.5rem;margin-bottom:12px}
+.fade-in{animation:fadeIn 0.35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const{useState,useEffect,useCallback,useMemo}=React;
+
+const SEFARIA='https://www.sefaria.org/api';
+const HEBCAL='https://www.hebcal.com/converter';
+const SUPABASE_URL='https://goyhoiyqyxajkmscnvpd.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdveWhvaXlxeXhhamttc2NudnBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1MjEyNjIsImV4cCI6MjA4NzA5NzI2Mn0.-9-YlMhvjsJYbX5NBs5QKm7lBgUcGE88h4upAJrI8q0';
+const PASS_KEY='9222';const LS_KEY='ms1_data';
+const DAY_NAMES=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Shabbos'];
+const DAY_ABBR=['Sun','Mon','Tue','Wed','Thu','Fri','\u05E9\u05D1\u05EA'];
+const ALIYAH_NAMES=["Rishon","Sheni","Shlishi","Revi'i","Chamishi","Shishi","Shvi'i"];
+const ALIYAH_HE=['\u05E8\u05B4\u05D0\u05E9\u05C1\u05D5\u05B9\u05DF','\u05E9\u05C5\u05E0\u05B4\u05D9','\u05E9\u05C0\u05DC\u05B4\u05D9\u05E9\u05B4\u05C1\u05D9','\u05E8\u05B0\u05D1\u05B4\u05D9\u05E2\u05B4\u05D9','\u05D7\u05B2\u05DE\u05B4\u05D9\u05E9\u05B4\u05C1\u05D9','\u05E9\u05B4\u05C1\u05E9\u05BC\u05B4\u05D9','\u05E9\u05C0\u05D1\u05B4\u05D9\u05E2\u05B4\u05D9'];
+const ALIYAH_NUM=['\u05D0','\u05D1','\u05D2','\u05D3','\u05D4','\u05D5','\u05D6'];
+
+/* Helpers */
+function getShabbosDate(){const n=new Date(),d=n.getDay(),diff=d===6?0:6-d;const s=new Date(n);s.setDate(n.getDate()+diff);return s.toISOString().split('T')[0];}
+function getTodayIdx(){return new Date().getDay();}
+function daysToShabbos(){const d=new Date().getDay();return d===6?0:6-d;}
+function strip(s){return s?s.replace(/<[^>]*>/g,'').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').trim():'';}
+function sRef(r){if(!r)return'';return r.replace('Exodus','Shemos').replace('Genesis','Bereishis').replace('Leviticus','Vayikra').replace('Numbers','Bamidbar').replace('Deuteronomy','Devarim');}
+function fmtDate(){const d=new Date(),m=['January','February','March','April','May','June','July','August','September','October','November','December'],sfx=n=>{if(n>=11&&n<=13)return'th';switch(n%10){case 1:return'st';case 2:return'nd';case 3:return'rd';default:return'th';}};return`${DAY_NAMES[d.getDay()]}, ${m[d.getMonth()]} ${d.getDate()}${sfx(d.getDate())}`;}
+
+/* Hebrew date via browser Intl API - no external dependency */
+function hebrewDate(){try{const f=new Intl.DateTimeFormat('he-IL-u-ca-hebrew',{day:'numeric',month:'long',year:'numeric'});return f.format(new Date());}catch(e){return '';}}
+
+/* APIs */
+async function fetchCal(){const r=await fetch(`${SEFARIA}/calendars`);const d=await r.json();return(d.calendar_items||[]).find(i=>i.title?.en?.startsWith('Parashat'))||null;}
+async function fetchTxt(ref){const r=await fetch(`${SEFARIA}/texts/${encodeURIComponent(ref)}?context=0&pad=0`);return await r.json();}
+async function fetchRashi(ref){try{const r=await fetch(`${SEFARIA}/texts/${encodeURIComponent('Rashi on '+ref)}?context=0&pad=0`);return await r.json();}catch(e){return null;}}
+function splitSeven(he,en){const t=he.length,b=Math.floor(t/7);let rem=t%7,g=[],idx=0;for(let i=0;i<7;i++){const s=b+(i<rem?1:0);g.push({he:he.slice(idx,idx+s),en:en.slice(idx,idx+s),startIdx:idx});idx+=s;}return g;}
+
+/* Supabase */
+async function cloudLoad(){try{const r=await fetch(`${SUPABASE_URL}/rest/v1/progress?pass_key=eq.${PASS_KEY}&select=data,calendar,updated_at`,{headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}});const rows=await r.json();return(rows.length>0&&rows[0].calendar?.maavara)?rows[0].calendar.maavara:null;}catch(e){return null;}}
+async function cloudSave(d){try{const r=await fetch(`${SUPABASE_URL}/rest/v1/progress?pass_key=eq.${PASS_KEY}&select=calendar`,{headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}});const rows=await r.json();let cal=(rows.length>0&&rows[0].calendar)?rows[0].calendar:{};cal.maavara=d;await fetch(`${SUPABASE_URL}/rest/v1/progress?pass_key=eq.${PASS_KEY}`,{method:'PATCH',headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({calendar:cal,updated_at:new Date().toISOString()})});}catch(e){}}
+function lLoad(){try{return JSON.parse(localStorage.getItem(LS_KEY))||{};}catch{return{};}}
+function lSave(d){localStorage.setItem(LS_KEY,JSON.stringify(d));}
+
+/* AI */
+async function askAI(type,params){try{const r=await fetch('/api/explain',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,...params})});const d=await r.json();return d.text||'Could not get explanation.';}catch(e){return'Could not connect to AI tutor.';}}
+
+/* === COMPONENTS === */
+
+function Loading({text}){return<div className="loading"><div className="spinner"/><div className="loading-text">{text||'Loading parasha...'}</div></div>;}
+function ErrorCard({msg,onRetry}){return<div className="error-card"><h3>Couldn't load</h3><p style={{color:'var(--text3)',fontSize:'0.88rem',marginTop:4}}>{msg}</p><button className="retry-btn" onClick={onRetry}>Try Again</button></div>;}
+
+function Pasuk({he,en,num}){return<div className="pasuk fade-in"><div className="pasuk-num">{'\u05E4\u05E1\u05D5\u05E7'} {num}</div><div className="pasuk-he" dangerouslySetInnerHTML={{__html:he}}/><div className="pasuk-en">{strip(en)||'...'}</div></div>;}
+
+function Rashi({rashi,pasukHe,pasukEn,parasha,aliyah}){
+  const[ai,setAi]=useState(null);const[loading,setLoading]=useState(false);
+  const ask=async t=>{setLoading(true);setAi(await askAI(t,{rashiHe:rashi.he,rashiEn:rashi.en,pasukHe,pasukEn,parasha,aliyah}));setLoading(false);};
+  return<div className="rashi-block fade-in">
+    <div className="rashi-label">Rashi</div>
+    {rashi.dibbur&&<div className="rashi-dibbur">{rashi.dibbur}</div>}
+    <div className="rashi-he" dangerouslySetInnerHTML={{__html:rashi.he}}/>
+    {rashi.en?<div className="rashi-en">{strip(rashi.en)}</div>:<div className="rashi-no-en">English not available from Sefaria</div>}
+    <div className="ai-btns">
+      <button className="ai-btn" onClick={()=>ask('whats_the_question')} disabled={loading}>What bothered Rashi?</button>
+      <button className="ai-btn" onClick={()=>ask('explain_simply')} disabled={loading}>Explain simply</button>
+      {ai&&<button className="ai-btn" onClick={()=>ask('deeper')} disabled={loading}>Go deeper</button>}
+    </div>
+    {loading&&<div className="ai-response ai-loading">Thinking...</div>}
+    {ai&&!loading&&<div className="ai-response">{ai}</div>}
+  </div>;
+}
+
+/* Reading Screen */
+function ReadingScreen({dayIdx,pesukim,rashiData,parasha,aliyahRef,onBack,onComplete,progress}){
+  const[phase,setPhase]=useState(()=>{const dp=progress[dayIdx]||{};if(!dp.mikra1)return'mikra1';if(!dp.rashi)return'rashi';if(!dp.mikra2)return'mikra2';return'mikra1';});
+  const dp=progress[dayIdx]||{};
+  const phases=[{id:'mikra1',label:'1st Reading',done:dp.mikra1},{id:'rashi',label:'Rashi',done:dp.rashi},{id:'mikra2',label:'2nd Reading',done:dp.mikra2}];
+  const rashiComments=useMemo(()=>{if(!rashiData)return[];const c=[];const heT=Array.isArray(rashiData.he)?rashiData.he:[];const enT=Array.isArray(rashiData.text)?rashiData.text:[];for(let i=0;i<heT.length;i++){const h=heT[i],e=enT[i];if(Array.isArray(h)){for(let j=0;j<h.length;j++){if(h[j]&&strip(h[j]).length>0)c.push({he:h[j],en:e?.[j]||null,pasukIdx:i});}}else if(h&&strip(h).length>0)c.push({he:h,en:e||null,pasukIdx:i});}return c;},[rashiData]);
+  const top=()=>window.scrollTo(0,0);
+  const mark=()=>{onComplete(dayIdx,phase);if(phase==='mikra1'){setPhase('rashi');top();}else if(phase==='rashi'){setPhase('mikra2');top();}else{onBack();}};
+  const btnTxt=phase==='mikra1'?'Done \u2014 Continue to Rashi \u2192':phase==='rashi'?'Done \u2014 2nd Reading \u2192':dp.mikra2?'All Done \u2014 Home':'Complete This Aliyah \u2713';
+  return<div className="reading">
+    <div className="r-hdr"><button className="r-back" onClick={onBack}>{'\u2039'}</button><div className="r-hdr-info"><h2>{ALIYAH_HE[dayIdx]} {'\u00B7'} {ALIYAH_NAMES[dayIdx]}</h2><span>{parasha}{aliyahRef?` \u00B7 ${sRef(aliyahRef)}`:''}</span></div></div>
+    <div className="r-tabs">{phases.map(p=><button key={p.id} className={`r-tab ${phase===p.id?'active':''} ${p.done?'done':''}`} onClick={()=>{setPhase(p.id);top();}}>{p.label}{p.done?' \u2713':''}</button>)}</div>
+    <div className="r-body">
+      {(phase==='mikra1'||phase==='mikra2')&&<>
+        <div className={`tip-box ${phase==='mikra1'?'read':'read2'}`}><span className="tip-box-icon">{phase==='mikra1'?'\uD83D\uDCD6':'\u2728'}</span><div>{phase==='mikra1'?<><b>First reading.</b> Read each pasuk in Hebrew. The English is below to help you understand.</>:<><b>Second reading.</b> Now that you've seen Rashi, read through again. You'll notice things you missed.</>}</div></div>
+        {pesukim.he.map((h,i)=><Pasuk key={i} he={h} en={pesukim.en[i]} num={pesukim.startIdx+i+1}/>)}
+      </>}
+      {phase==='rashi'&&<>
+        <div className="tip-box rashi"><span className="tip-box-icon">{'\uD83D\uDCDD'}</span><div><b>Rashi's commentary.</b> Read what you can, then tap <b>"What bothered Rashi?"</b> for a clear explanation.</div></div>
+        {rashiComments.length>0?rashiComments.map((r,i)=><Rashi key={i} rashi={r} pasukHe={pesukim.he[r.pasukIdx]||''} pasukEn={pesukim.en[r.pasukIdx]||''} parasha={parasha} aliyah={ALIYAH_NAMES[dayIdx]}/>):<div className="empty-state"><div className="emoji">{'\uD83D\uDCDA'}</div><p>No Rashi loaded for this section.</p><p style={{marginTop:8,fontSize:'0.82rem'}}>Skip ahead to the second reading.</p></div>}
+      </>}
+    </div>
+    <div className="bottom-bar"><button className="done-btn primary" onClick={mark}>{btnTxt}</button></div>
+  </div>;
+}
+
+/* Home Screen */
+function Home({parasha,parashaHe,parashaRef,aliyahRefs,progress,onSelect,stats}){
+  const today=getTodayIdx(),left=daysToShabbos();
+  const done=Object.keys(progress).filter(k=>{const p=progress[k];return p.mikra1&&p.rashi&&p.mikra2;}).length;
+  const tp=progress[today]||{},todayDone=tp.mikra1&&tp.rashi&&tp.mikra2;
+  const next=!tp.mikra1?'mikra1':!tp.rashi?'rashi':!tp.mikra2?'mikra2':null;
+  const pKeys=['mikra1','rashi','mikra2'],pLabels=['1st Read','Rashi','2nd Read'];
+  const conn=i=>{if(tp[pKeys[i]]&&tp[pKeys[i+1]])return'done';return'';};
+
+  return<div className="home fade-in">
+    {/* Parasha banner - THIS WEEK'S PARASHA prominently */}
+    <div className="parasha-banner">
+      <div className="parasha-label">This Week's Parasha</div>
+      <div className="parasha-name">{parasha}</div>
+      {parashaHe&&<div className="parasha-he">{parashaHe}</div>}
+      <div className="parasha-ref">{sRef(parashaRef)}</div>
+      <div className="parasha-status">
+        <div className="parasha-progress"><strong>{done}</strong>/7 aliyos done</div>
+        <div className="parasha-countdown">{left===0?'Good Shabbos!':`${left} day${left>1?'s':''} left`}</div>
+      </div>
+    </div>
+
+    {/* Today's aliyah */}
+    <div className="today">
+      <div className="today-top"><div className="today-label">Today's Aliyah</div><div className="today-day">{DAY_NAMES[today]}</div></div>
+      <div className="today-main">
+        <div className="today-badge">{ALIYAH_NUM[today]}</div>
+        <div className="today-info">
+          <div className="today-name">{ALIYAH_HE[today]}</div>
+          <div className="today-en">{ALIYAH_NAMES[today]}</div>
+          {aliyahRefs[today]&&<div className="today-ref">{sRef(aliyahRefs[today])}</div>}
+        </div>
+      </div>
+      <div className="phases">
+        {pKeys.map((pk,i)=>{const d=tp[pk],isNext=pk===next;return<React.Fragment key={pk}>
+          <div className="phase-node"><div className={`phase-circ ${d?'done':''} ${isNext?'active':''}`}>{d?'\u2713':i+1}</div><div className={`phase-lbl ${d?'done':''} ${isNext?'active':''}`}>{pLabels[i]}</div></div>
+          {i<2&&<div className={`phase-line ${conn(i)}`}/>}
+        </React.Fragment>;})}
+      </div>
+      {todayDone?<div><div className="done-msg">{'\u2713'} Today's aliyah complete</div><button className="cta-btn done-state" onClick={()=>onSelect(today)}>Review Again</button></div>
+      :<button className="cta-btn go" onClick={()=>onSelect(today)}>{next==='mikra1'?'Start Reading \u2192':next==='rashi'?'Continue \u2192 Rashi':'Continue \u2192 2nd Reading'}</button>}
+    </div>
+
+    {/* Week strip */}
+    <div className="week"><div className="week-label">This Week</div><div className="week-row">
+      {[0,1,2,3,4,5,6].map(i=>{const dp=progress[i]||{},d=dp.mikra1&&dp.rashi&&dp.mikra2,is=i===today;
+        return<div key={i} className="wd" onClick={()=>onSelect(i)}><div className={`wd-c ${d?'done':''} ${is?'today':''}`}>{d?'\u2713':ALIYAH_NUM[i]}</div><div className={`wd-d ${is?'today':''}`}>{DAY_ABBR[i]}</div></div>;})}
+    </div></div>
+
+    <div className="tip">{'\u05E9\u05E0\u05D9\u05DD \u05DE\u05E7\u05E8\u05D0 \u05D5\u05D0\u05D7\u05D3 \u05EA\u05E8\u05D2\u05D5\u05DD'}</div>
+  </div>;
+}
+
+/* App */
+function App(){
+  const[scr,setScr]=useState('home');const[loading,setLoading]=useState(true);const[err,setErr]=useState(null);
+  const[parasha,setParasha]=useState('');const[parashaHe,setParashaHe]=useState('');const[parashaRef,setParashaRef]=useState('');
+  const[aRefs,setARefs]=useState([]);const[aPesukim,setAPesukim]=useState([]);const[aRashi,setARashi]=useState([]);
+  const[wk,setWk]=useState(getShabbosDate());const[prog,setProg]=useState({});const[stats,setStats]=useState({});
+  const[sel,setSel]=useState(null);const[hDate]=useState(hebrewDate);
+
+  const load=useCallback(async()=>{
+    setLoading(true);setErr(null);
+    try{
+      const local=lLoad();const w=getShabbosDate();setWk(w);
+      let sp={},ss={streak:0,bestStreak:0,totalWeeks:0};
+      const cloud=await cloudLoad();
+      if(cloud){sp=cloud.weeks?.[w]||{};ss=cloud.stats||ss;}
+      else if(local.weeks?.[w]){sp=local.weeks[w];ss=local.stats||ss;}
+      setProg(sp);setStats(ss);
+      const cal=await fetchCal();if(!cal)throw new Error('Could not fetch parasha calendar');
+      const pn=cal.title?.en?.replace('Parashat ','')||'Unknown';
+      setParasha(pn);setParashaHe(cal.title?.he||'');setParashaRef(cal.ref||'');
+      let refs=cal.extraDetails?.aliyot||null;
+      const td=await fetchTxt(cal.ref||'');if(!td?.he)throw new Error('Could not fetch parasha text');
+      let hf=[],ef=[];
+      if(Array.isArray(td.he[0])){for(const c of td.he)hf=hf.concat(Array.isArray(c)?c:[c]);for(const c of td.text)ef=ef.concat(Array.isArray(c)?c:[c]);}else{hf=td.he;ef=td.text||[];}
+      let groups;
+      if(refs?.length===7){setARefs(refs);groups=[];let ri=0;
+        for(let i=0;i<7;i++){try{const a=await fetchTxt(refs[i]);let ah=[],ae=[];if(a?.he){if(Array.isArray(a.he[0])){for(const c of a.he)ah=ah.concat(Array.isArray(c)?c:[c]);for(const c of(a.text||[]))ae=ae.concat(Array.isArray(c)?c:[c]);}else{ah=a.he;ae=a.text||[];}}groups.push({he:ah,en:ae,startIdx:ri});ri+=ah.length;}catch(e){groups.push({he:[],en:[],startIdx:ri});}}}
+      else{groups=splitSeven(hf,ef);setARefs(groups.map((_,i)=>`Section ${i+1}`));}
+      setAPesukim(groups);
+      const ra=new Array(7).fill(null);setARashi(ra);
+      if(refs?.length===7){Promise.allSettled(refs.map((r,i)=>fetchRashi(r).then(d=>{ra[i]=d;}))).then(()=>setARashi([...ra]));}
+      else{fetchRashi(cal.ref||'').then(d=>{if(d){for(let i=0;i<7;i++)ra[i]=d;setARashi([...ra]);}});}
+      setLoading(false);
+    }catch(e){setErr(e.message);setLoading(false);}
+  },[]);
+  useEffect(()=>{load();},[load]);
+
+  const save=useCallback((np,ns)=>{const d=lLoad();if(!d.weeks)d.weeks={};d.weeks[wk]=np;d.stats=ns||stats;lSave(d);cloudSave(d);},[wk,stats]);
+  const onComplete=useCallback((di,ph)=>{setProg(prev=>{const u={...prev};if(!u[di])u[di]={};u[di]={...u[di],[ph]:true,[`${ph}_ts`]:Date.now()};let ns={...stats};const all=[0,1,2,3,4,5,6].every(i=>{const p=i===di?u[i]:(u[i]||{});return p.mikra1&&p.rashi&&p.mikra2;});if(all&&!stats._weekComplete){ns.totalWeeks=(ns.totalWeeks||0)+1;ns.streak=(ns.streak||0)+1;if(ns.streak>(ns.bestStreak||0))ns.bestStreak=ns.streak;ns._weekComplete=true;setStats(ns);}save(u,ns);return u;});},[stats,save]);
+
+  const go=i=>{setSel(i);setScr('reading');window.scrollTo(0,0);};
+  const back=()=>{setScr('home');setSel(null);window.scrollTo(0,0);};
+
+  const Hdr=()=><div className="hdr">
+    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+      <div><div className="hdr-title">{'\u05DE\u05B7\u05E2\u05B2\u05D1\u05B8\u05E8\u05B8\u05D4 \u05E1\u05B6\u05D3\u05B0\u05E8\u05B8\u05D4'}</div><div className="hdr-sub">Maavara Sedra</div></div>
+      {(stats.streak||0)>0&&<div className="hdr-streak">{stats.streak>=4?'\uD83D\uDD25':'\u26A1'} {stats.streak}w</div>}
+    </div>
+    <div className="hdr-line"/>
+    <div className="hdr-dates">
+      <div className="hdr-date-en">{fmtDate()}</div>
+      {hDate&&<div className="hdr-date-he">{hDate}</div>}
+    </div>
+  </div>;
+
+  if(loading)return<div><Hdr/><Loading text="Loading this week's parasha..."/></div>;
+  if(err)return<div><Hdr/><ErrorCard msg={err} onRetry={load}/></div>;
+  if(scr==='reading'&&sel!==null)return<ReadingScreen dayIdx={sel} pesukim={aPesukim[sel]||{he:[],en:[],startIdx:0}} rashiData={aRashi[sel]} parasha={parasha} aliyahRef={aRefs[sel]} onBack={back} onComplete={onComplete} progress={prog}/>;
+  return<div><Hdr/><Home parasha={parasha} parashaHe={parashaHe} parashaRef={parashaRef} aliyahRefs={aRefs} progress={prog} onSelect={go} stats={stats}/></div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
