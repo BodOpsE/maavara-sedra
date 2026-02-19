@@ -155,7 +155,7 @@ button { font-family:var(--serif); cursor:pointer }
   background:none; font-weight:600; font-family:var(--serif) }
 .r-tab.active { color:var(--brown); border-bottom-color:var(--warm) }
 .r-tab.done { color:var(--check) }
-.r-body { padding:32px 24px 140px }
+.r-body { padding:20px 20px 140px }
 
 /* Tip boxes — all same warm palette */
 .tip-box { padding:16px 18px; border-radius:12px; margin-bottom:32px;
@@ -163,35 +163,46 @@ button { font-family:var(--serif); cursor:pointer }
   background:var(--warm-faint); color:var(--text2); border:1px solid var(--warm-border) }
 .tip-box-icon { font-size:1.05rem; flex-shrink:0; margin-top:1px }
 
-/* Pasuk — BIG readable chumash text */
-.pasuk { margin-bottom:40px; padding-bottom:36px; border-bottom:1px solid var(--border) }
+/* Pasuk — compact, readable */
+.pasuk { margin-bottom:6px; padding:16px 0; border-bottom:1px solid var(--border) }
 .pasuk:last-child { border-bottom:none }
-.pasuk-num { font-size:0.72rem; color:var(--warm); font-weight:700; margin-bottom:16px;
-  font-family:var(--hebrew); letter-spacing:0.5px }
-.pasuk-he { font-family:var(--hebrew); font-size:1.6rem; line-height:2.5;
+.pasuk-num { font-size:0.65rem; color:var(--warm); font-weight:700; margin-bottom:8px;
+  font-family:var(--hebrew); letter-spacing:0.5px; opacity:0.7 }
+.pasuk-he { font-family:var(--hebrew); font-size:1.45rem; line-height:2.2;
   direction:rtl; text-align:right; color:var(--text); font-weight:400;
-  letter-spacing:0.4px; word-spacing:3px }
-.pasuk-en { font-size:0.95rem; line-height:1.9; color:var(--text3);
-  margin-top:20px; padding-left:18px; border-left:2.5px solid var(--border);
-  font-style:italic }
+  word-spacing:2px }
+.pasuk-actions { display:flex; gap:8px; margin-top:10px }
+.pasuk-toggle { display:inline-flex; align-items:center; gap:5px; padding:7px 13px;
+  background:var(--card2); border:1px solid var(--border); border-radius:8px;
+  font-size:0.76rem; color:var(--text3); font-weight:600;
+  transition:all 0.15s; font-family:var(--serif) }
+.pasuk-toggle:active { background:var(--bg) }
+.pasuk-toggle.open { background:var(--warm-faint); border-color:var(--warm-border); color:var(--brown-soft) }
+.pasuk-en { font-size:0.92rem; line-height:1.85; color:var(--text2);
+  margin-top:12px; padding:14px 16px; background:var(--card2);
+  border-radius:10px; border:1px solid var(--border) }
+.pasuk-ai-response { margin-top:10px; padding:14px 16px; background:var(--card2);
+  border-radius:10px; border:1px solid var(--border);
+  font-size:0.9rem; line-height:1.85; color:var(--text) }
+.pasuk-ai-loading { color:var(--text4); font-style:italic; font-size:0.85rem; margin-top:8px }
 
 /* Rashi blocks — clean, spacious, readable */
-.rashi-block { margin-bottom:36px; background:var(--card); border-radius:14px;
-  padding:26px; border:1px solid var(--border); box-shadow:0 1px 8px var(--shadow) }
-.rashi-label { font-size:0.6rem; color:var(--text4); text-transform:uppercase;
-  letter-spacing:1.5px; font-weight:700; margin-bottom:14px }
-.rashi-dibbur { font-family:var(--hebrew); font-size:1.25rem; direction:rtl; text-align:right;
-  color:var(--brown); font-weight:700; margin-bottom:18px; padding-bottom:16px;
-  border-bottom:1px solid var(--border); line-height:1.9 }
+.rashi-block { margin-bottom:20px; background:var(--card); border-radius:14px;
+  padding:20px; border:1px solid var(--border); box-shadow:0 1px 8px var(--shadow) }
+.rashi-label { font-size:0.58rem; color:var(--text4); text-transform:uppercase;
+  letter-spacing:1.5px; font-weight:700; margin-bottom:10px }
+.rashi-dibbur { font-family:var(--hebrew); font-size:1.15rem; direction:rtl; text-align:right;
+  color:var(--brown); font-weight:700; margin-bottom:14px; padding-bottom:12px;
+  border-bottom:1px solid var(--border); line-height:1.8 }
 
 /* Rashi Hebrew+English paired — generous sizing */
 .rashi-pair { margin-bottom:18px }
-.rashi-he { font-family:var(--hebrew); font-size:1.2rem; direction:rtl; text-align:right;
-  color:var(--text); line-height:2.4; margin-bottom:16px; word-spacing:2px }
-.rashi-en { font-size:0.95rem; line-height:1.95; color:var(--text2);
-  padding:16px 0 0; border-top:1px dashed var(--border) }
-.rashi-no-en { font-size:0.84rem; color:var(--text4); font-style:italic;
-  padding-top:16px; border-top:1px dashed var(--border) }
+.rashi-he { font-family:var(--hebrew); font-size:1.15rem; direction:rtl; text-align:right;
+  color:var(--text); line-height:2.2; margin-bottom:14px; word-spacing:2px }
+.rashi-en { font-size:0.9rem; line-height:1.9; color:var(--text2);
+  padding:14px 16px; background:var(--card2); border-radius:10px; border:1px solid var(--border) }
+.rashi-no-en { font-size:0.82rem; color:var(--text4); font-style:italic;
+  padding:12px 16px; background:var(--card2); border-radius:10px; border:1px solid var(--border) }
 
 /* AI buttons — warm cream, NO purple, NO gradients */
 .ai-btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:20px }
@@ -210,6 +221,20 @@ button { font-family:var(--serif); cursor:pointer }
   direction:rtl; text-align:right; color:var(--brown); line-height:2.3;
   padding-bottom:14px; margin-bottom:14px; border-bottom:1px dashed var(--border) }
 .ai-loading { color:var(--text4); font-style:italic }
+
+/* AI Review section at end of reading */
+.ai-review { margin-top:40px; padding-top:28px; border-top:2px solid var(--border) }
+.ai-review-header { text-align:center; margin-bottom:20px }
+.ai-review-title { font-size:1rem; font-weight:700; color:var(--brown); font-family:var(--hebrew) }
+.ai-review-sub { font-size:0.78rem; color:var(--text4); margin-top:4px }
+.ai-review-btn { width:100%; padding:16px; border-radius:12px; border:1.5px solid var(--warm-border);
+  background:var(--warm-faint); color:var(--brown-soft); font-size:0.92rem;
+  font-weight:700; font-family:var(--serif); transition:all 0.15s }
+.ai-review-btn:active { background:var(--bg) }
+.ai-review-btn:disabled { opacity:0.4 }
+.ai-review-response { margin-top:16px; padding:20px; background:var(--card);
+  border-radius:14px; border:1px solid var(--border); box-shadow:0 1px 8px var(--shadow);
+  font-size:0.92rem; line-height:1.9; color:var(--text); white-space:pre-wrap }
 
 /* Bottom bar */
 .bottom-bar { position:fixed; bottom:0; left:50%; transform:translateX(-50%);
@@ -297,11 +322,37 @@ async function askAI(type,params){
 function Loading({text}){return<div className="loading"><div className="spinner"/><div className="loading-text">{text||'Loading parasha...'}</div></div>;}
 function ErrorCard({msg,onRetry}){return<div className="error-card"><h3>Couldn't load</h3><p style={{color:'var(--text3)',fontSize:'0.88rem',marginTop:6}}>{msg}</p><button className="retry-btn" onClick={onRetry}>Try Again</button></div>;}
 
-function Pasuk({he,en,num}){return<div className="pasuk fade-in">
-  <div className="pasuk-num">{'\u05E4\u05E1\u05D5\u05E7'} {num}</div>
-  <div className="pasuk-he" dangerouslySetInnerHTML={{__html:he}}/>
-  <div className="pasuk-en">{strip(en)||'...'}</div>
-</div>;}
+function Pasuk({he,en,num,parasha,aliyah}){
+  const[showEn,setShowEn]=useState(false);
+  const[ai,setAi]=useState(null);
+  const[loading,setLoading]=useState(false);
+  const explain=async()=>{
+    if(ai){setAi(null);return;}
+    setLoading(true);
+    try{
+      const r=await fetch('/api/explain',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({type:'explain_pasuk',pasukHe:he,pasukEn:en,parasha,aliyah,
+          instruction:'Explain this pasuk simply and clearly in 2-3 sentences. Use frum terminology (Hashem, Moshe, Bnei Yisroel, etc). Keep it concise and accessible.'})});
+      const d=await r.json();setAi(d.text||'Could not get explanation.');
+    }catch(e){setAi('Could not connect to AI tutor.');}
+    setLoading(false);
+  };
+  const cleanEn=strip(en)||'...';
+  return<div className="pasuk fade-in">
+    <div className="pasuk-num">{'\u05E4\u05E1\u05D5\u05E7'} {num}</div>
+    <div className="pasuk-he" dangerouslySetInnerHTML={{__html:he}}/>
+    <div className="pasuk-actions">
+      <button className={`pasuk-toggle ${showEn?'open':''}`} onClick={()=>setShowEn(!showEn)}>
+        {showEn?'Hide English':'Show English'}
+      </button>
+      <button className={`pasuk-toggle ${ai?'open':''}`} onClick={explain} disabled={loading}>
+        {loading?'Thinking...':ai?'Hide Explanation':'Explain'}
+      </button>
+    </div>
+    {showEn&&<div className="pasuk-en">{cleanEn}</div>}
+    {loading&&<div className="pasuk-ai-loading">Thinking...</div>}
+    {ai&&!loading&&<div className="pasuk-ai-response">{ai}</div>}
+  </div>;}
 
 function Rashi({rashi,pasukHe,pasukEn,parasha,aliyah}){
   const[ai,setAi]=useState(null);const[loading,setLoading]=useState(false);
@@ -337,12 +388,29 @@ function Rashi({rashi,pasukHe,pasukEn,parasha,aliyah}){
 /* Reading Screen */
 function ReadingScreen({dayIdx,pesukim,rashiData,parasha,aliyahRef,onBack,onComplete,progress}){
   const[phase,setPhase]=useState(()=>{const dp=progress[dayIdx]||{};if(!dp.mikra1)return'mikra1';if(!dp.rashi)return'rashi';if(!dp.mikra2)return'mikra2';return'mikra1';});
+  const[aiReview,setAiReview]=useState(null);
+  const[reviewLoading,setReviewLoading]=useState(false);
   const dp=progress[dayIdx]||{};
   const phases=[{id:'mikra1',label:'1st Reading',done:dp.mikra1},{id:'rashi',label:'Rashi',done:dp.rashi},{id:'mikra2',label:'2nd Reading',done:dp.mikra2}];
   const rashiComments=useMemo(()=>{if(!rashiData)return[];const c=[];const heT=Array.isArray(rashiData.he)?rashiData.he:[];const enT=Array.isArray(rashiData.text)?rashiData.text:[];for(let i=0;i<heT.length;i++){const h=heT[i],e=enT[i];if(Array.isArray(h)){for(let j=0;j<h.length;j++){if(h[j]&&strip(h[j]).length>0)c.push({he:h[j],en:e?.[j]||null,pasukIdx:i});}}else if(h&&strip(h).length>0)c.push({he:h,en:e||null,pasukIdx:i});}return c;},[rashiData]);
   const top=()=>window.scrollTo(0,0);
-  const mark=()=>{onComplete(dayIdx,phase);if(phase==='mikra1'){setPhase('rashi');top();}else if(phase==='rashi'){setPhase('mikra2');top();}else{onBack();}};
+  const mark=()=>{onComplete(dayIdx,phase);if(phase==='mikra1'){setPhase('rashi');setAiReview(null);top();}else if(phase==='rashi'){setPhase('mikra2');setAiReview(null);top();}else{onBack();}};
   const btnTxt=phase==='mikra1'?'Done \u2014 Continue to Rashi \u2192':phase==='rashi'?'Done \u2014 2nd Reading \u2192':dp.mikra2?'All Done \u2014 Home':'Complete This Aliyah \u2713';
+
+  const getReview=async()=>{
+    if(aiReview){setAiReview(null);return;}
+    setReviewLoading(true);
+    try{
+      const allHe=pesukim.he.map(h=>strip(h)).join(' ');
+      const allEn=pesukim.en.map(e=>strip(e)).join(' ');
+      const phaseLabel=phase==='mikra1'?'first reading':phase==='rashi'?'Rashi study':'second reading';
+      const r=await fetch('/api/explain',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({type:'review_aliyah',pasukHe:allHe,pasukEn:allEn,parasha,aliyah:ALIYAH_NAMES[dayIdx],
+          instruction:`Give a clear, engaging summary of this aliyah (${ALIYAH_NAMES[dayIdx]} of Parshas ${parasha}) after the ${phaseLabel}. Use frum terminology (Hashem, Moshe, Bnei Yisroel, klal Yisroel, etc). Cover: 1) What happens in this section, 2) Key themes or lessons, 3) One interesting insight or connection. Keep it 4-6 sentences, conversational but substantive. Like a quick chavrusa review.`})});
+      const d=await r.json();setAiReview(d.text||'Could not get review.');
+    }catch(e){setAiReview('Could not connect to AI tutor.');}
+    setReviewLoading(false);
+  };
 
   return<div className="reading">
     <div className="r-hdr">
@@ -362,11 +430,11 @@ function ReadingScreen({dayIdx,pesukim,rashiData,parasha,aliyahRef,onBack,onComp
         <div className="tip-box">
           <span className="tip-box-icon">{phase==='mikra1'?'\uD83D\uDCD6':'\u2728'}</span>
           <div>{phase==='mikra1'
-            ?<><b>First reading.</b> Read each pasuk in Hebrew. The English is below to help you understand.</>
+            ?<><b>First reading.</b> Read each pasuk in Hebrew. Tap "Show English" or "Explain" if you need help.</>
             :<><b>Second reading.</b> Now that you've seen Rashi, read through again. You'll notice things you missed.</>}
           </div>
         </div>
-        {pesukim.he.map((h,i)=><Pasuk key={i} he={h} en={pesukim.en[i]} num={pesukim.startIdx+i+1}/>)}
+        {pesukim.he.map((h,i)=><Pasuk key={i} he={h} en={pesukim.en[i]} num={pesukim.startIdx+i+1} parasha={parasha} aliyah={ALIYAH_NAMES[dayIdx]}/>)}
       </>}
       {phase==='rashi'&&<>
         <div className="tip-box">
@@ -377,6 +445,19 @@ function ReadingScreen({dayIdx,pesukim,rashiData,parasha,aliyahRef,onBack,onComp
           ?rashiComments.map((r,i)=><Rashi key={i} rashi={r} pasukHe={pesukim.he[r.pasukIdx]||''} pasukEn={pesukim.en[r.pasukIdx]||''} parasha={parasha} aliyah={ALIYAH_NAMES[dayIdx]}/>)
           :<div className="empty-state"><div className="emoji">{'\uD83D\uDCDA'}</div><p>No Rashi loaded for this section.</p><p style={{marginTop:10,fontSize:'0.82rem'}}>Skip ahead to the second reading.</p></div>}
       </>}
+
+      {/* AI Review Section */}
+      <div className="ai-review">
+        <div className="ai-review-header">
+          <div className="ai-review-title">Review This Reading</div>
+          <div className="ai-review-sub">AI-powered summary of what you just learned</div>
+        </div>
+        <button className="ai-review-btn" onClick={getReview} disabled={reviewLoading}>
+          {reviewLoading?'Generating review...':aiReview?'Hide Review':'Summarize This Aliyah'}
+        </button>
+        {reviewLoading&&<div className="pasuk-ai-loading" style={{textAlign:'center',marginTop:12}}>Thinking...</div>}
+        {aiReview&&!reviewLoading&&<div className="ai-review-response">{aiReview}</div>}
+      </div>
     </div>
     <div className="bottom-bar"><button className="done-btn primary" onClick={mark}>{btnTxt}</button></div>
   </div>;
