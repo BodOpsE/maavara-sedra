@@ -7,7 +7,6 @@ export default async function handler(req, res) {
 
   const { type, rashiHe, rashiEn, pasukHe, pasukEn, parasha, aliyah, instruction } = req.body;
   
-  // Strip HTML tags from Sefaria content
   const clean = (s) => {
     if (!s) return '';
     if (typeof s !== 'string') s = String(s);
@@ -18,31 +17,37 @@ export default async function handler(req, res) {
   const cRashiHe = clean(rashiHe);
   const cRashiEn = clean(rashiEn);
 
-  const systemPrompt = `You are a warm, patient Torah tutor helping a frum Yid with his weekly Maavara Sedra (Shnayim Mikra V'Echad Targum). 
+  const systemPrompt = `You are a Torah tutor for a frum Yid doing his weekly Maavara Sedra.
 
-Guidelines:
-- Explain in simple, clear English
-- Use frum terminology: Hashem (not God), Moshe Rabbeinu, Bnei Yisroel, klal Yisroel, etc.
-- For Rashi questions: start by identifying WHAT BOTHERED RASHI — what question is he answering?
-- Then explain Rashi's answer simply
-- Keep explanations concise and conversational
-- Never be condescending
-- When quoting Hebrew, keep it brief and relevant`;
+CRITICAL RULES:
+- Be CONCISE. 2-4 sentences max unless asked for depth.
+- When you reference Hebrew terms (Hashem, Mishkan, korban, etc), ALWAYS write them in Hebrew with nekudos. Examples: הַקָּדוֹשׁ בָּרוּךְ הוּא instead of "Hakadosh Baruch Hu", מִשְׁכָּן instead of "Mishkan", הַשֵּׁם instead of "Hashem", מֹשֶׁה רַבֵּנוּ instead of "Moshe Rabbeinu", בְּנֵי יִשְׂרָאֵל instead of "Bnei Yisroel", קָרְבָּן instead of "korban"
+- Write in English but embed Hebrew words in nekudos naturally
+- Don't repeat the Rashi Hebrew text back — the user already sees it
+- Don't add introductions or sign-offs
+- Get straight to the point`;
 
   let userMsg = '';
+  let maxTokens = 250;
   
   if (type === 'explain_pasuk') {
-    userMsg = `Parashat ${parasha}, Aliyah ${aliyah}.\n\nPasuk (Hebrew): ${cPasukHe}\nPasuk (English): ${cPasukEn}\n\n${instruction || 'Explain this pasuk simply in 2-3 sentences.'}`;
+    userMsg = `Parshas ${parasha}, ${aliyah}.\nPasuk: ${cPasukHe}\nMeaning: ${cPasukEn}\n\nExplain what's happening in this pasuk in 2-3 sentences. Straight to the point.`;
+    maxTokens = 200;
   } else if (type === 'review_aliyah') {
-    userMsg = `Parashat ${parasha}, Aliyah ${aliyah}.\n\nFull text: ${cPasukEn}\n\n${instruction || 'Summarize this aliyah in 4-6 sentences.'}`;
+    userMsg = `Parshas ${parasha}, ${aliyah}.\n\nText: ${cPasukEn}\n\n${instruction || 'Summarize this aliyah in 4-5 sentences. What happened, key themes, one interesting point.'}`;
+    maxTokens = 350;
   } else if (type === 'whats_the_question') {
-    userMsg = `The student is learning Parashat ${parasha}, Aliyah ${aliyah}.\n\nPasuk (Hebrew): ${cPasukHe}\nPasuk (English): ${cPasukEn}\n\nRashi (Hebrew): ${cRashiHe}\nRashi (English): ${rashiEn || 'No English translation available'}\n\nExplain: What bothered Rashi in this pasuk? What's his question, and what's his answer? Keep it simple and clear — this is for a beginner.`;
+    userMsg = `Parshas ${parasha}, ${aliyah}.\nPasuk: ${cPasukEn}\nRashi: ${cRashiHe}\n\nIn 2-3 sentences: What BOTHERED Rashi in the pasuk? What's the textual difficulty he noticed? Then what's his answer? Focus on the QUESTION — what made Rashi feel he needed to comment here.`;
+    maxTokens = 250;
   } else if (type === 'explain_simply') {
-    userMsg = `The student is learning Parashat ${parasha}, Aliyah ${aliyah}.\n\nRashi (Hebrew): ${cRashiHe}\nRashi (English): ${rashiEn || 'No English translation available'}\n\nOn this pasuk:\nHebrew: ${cPasukHe}\nEnglish: ${cPasukEn}\n\nGive a simple, clear explanation of what Rashi is saying here. Assume the student is a beginner.`;
+    userMsg = `Parshas ${parasha}, ${aliyah}.\nPasuk: ${cPasukEn}\nRashi: ${cRashiHe}${cRashiEn ? '\nTranslation: ' + cRashiEn : ''}\n\nIn 2-3 sentences: What is Rashi saying here? Give me the bottom line simply. No need to explain what bothered him — just what his explanation IS.`;
+    maxTokens = 200;
   } else if (type === 'deeper') {
-    userMsg = `The student wants to go deeper on this Rashi from Parashat ${parasha}, Aliyah ${aliyah}.\n\nPasuk: ${cPasukHe} — ${cPasukEn}\nRashi: ${cRashiHe} — ${rashiEn || ''}\n\nGive a more in-depth explanation. What's the underlying Torah principle? Are there other opinions? How does this connect to the broader sugya or halachic implications? Still keep it accessible for a motivated beginner.`;
+    userMsg = `Parshas ${parasha}, ${aliyah}.\nPasuk: ${cPasukEn}\nRashi: ${cRashiHe}${cRashiEn ? '\nTranslation: ' + cRashiEn : ''}\n\nGo deeper: What Torah principle is at play? Are there other meforshim who disagree? Any halachic or hashkafic implications? 4-6 sentences.`;
+    maxTokens = 400;
   } else if (type === 'weekly_summary') {
-    userMsg = `The student just finished (or is finishing) Parashat ${parasha} for their weekly Maavara Sedra.\n\nGive a brief, encouraging 2-3 sentence summary of the key themes of this parasha and one interesting Rashi to look out for. Be warm and motivating.`;
+    userMsg = `Parshas ${parasha}. Brief 2-3 sentence summary of the parasha's key themes.`;
+    maxTokens = 200;
   }
 
   try {
@@ -55,7 +60,7 @@ Guidelines:
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 600,
+        max_tokens: maxTokens,
         system: systemPrompt,
         messages: [{ role: 'user', content: userMsg }]
       })
